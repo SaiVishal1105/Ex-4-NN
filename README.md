@@ -119,43 +119,104 @@ Normalize our dataset.
 ```
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeClassifier
+from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import confusion_matrix, classification_report
+from sklearn.preprocessing import StandardScaler
+import pandas as pd
 
+# Load Dataset
 iris = load_iris()
 
+# Features and Target
 X = iris.data
 y = iris.target
 
+# Convert to DataFrame
+df = pd.DataFrame(X, columns=iris.feature_names)
+
+# Add Target Column
+df['target'] = y
+
+# ---------------- PREPROCESSING ----------------
+
+# Head
+print("First 5 Rows:\n")
+print(df.head())
+
+# Tail
+print("\nLast 5 Rows:\n")
+print(df.tail())
+
+# Info
+print("\nDataset Information:\n")
+print(df.info())
+
+# Describe
+print("\nStatistical Summary:\n")
+print(df.describe())
+
+# Missing Values
+print("\nMissing Values:\n")
+print(df.isnull().sum())
+
+# Feature Scaling
+scaler = StandardScaler()
+
+X_scaled = scaler.fit_transform(X)
+
+# ------------------------------------------------
+
+# Train-Test Split
 X_train, X_test, y_train, y_test = train_test_split(
-    X,
+    X_scaled,
     y,
     test_size=0.2,
     random_state=42
 )
 
-model = DecisionTreeClassifier()
+# Create MLP Classifier
+model = MLPClassifier(
+    hidden_layer_sizes=(10,),
+    max_iter=1000,
+    random_state=42
+)
 
+# Train Model
 model.fit(X_train, y_train)
 
+# Prediction
 y_pred = model.predict(X_test)
 
-flower_list = [str(iris.target_names[i]) for i in y_pred]
+# Convert Numeric Labels to Flower Names
+predicted_flowers = [str(iris.target_names[i]) for i in y_pred]
+actual_flowers = [str(iris.target_names[i]) for i in y_test]
 
-print("Predicted Flower Names:\n")
-print(flower_list)
+# Predicted Output
+print("\nPredicted Flower Names:\n")
+print(predicted_flowers)
 
+# Actual Output
+print("\nActual Flower Names:\n")
+print(actual_flowers)
+
+# Confusion Matrix
 print("\nConfusion Matrix:\n")
 print(confusion_matrix(y_test, y_pred))
 
+# Classification Report
 print("\nClassification Report:\n")
-print(classification_report(y_test, y_pred, target_names=iris.target_names))
+print(classification_report(
+    y_test,
+    y_pred,
+    target_names=iris.target_names
+))
 
 
 ```
 
 <H3>Output:</H3>
-<img width="1747" height="447" alt="image" src="https://github.com/user-attachments/assets/1f9741f2-acfb-4ebc-a46a-a9658971c6df" />
+<img width="1758" height="459" alt="image" src="https://github.com/user-attachments/assets/be2c87c7-0741-4da7-9430-6b6649433542" />
+
 
 
 <H3>Result:</H3>
